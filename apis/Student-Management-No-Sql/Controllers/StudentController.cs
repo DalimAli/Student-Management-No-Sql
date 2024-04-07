@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Student_Management_No_Sql.Entities.Entities;
 using Student_Management_No_Sql.Services.Interfaces;
 
 namespace Student_Management_No_Sql.Controllers
@@ -16,10 +17,64 @@ namespace Student_Management_No_Sql.Controllers
         }
 
         [HttpGet]
-        [Route("get")]
-        public IActionResult Gets()
+        [Route("gets")]
+        public async Task<IActionResult> GetsAsync() 
         {
-            return Ok( new { Name = "Dalim"});// _studentService.GetType();
+            var students = await _studentService.GetAsync();
+            return Ok(students);
+        }
+
+        [HttpGet("{id:length(24)}")]
+        public async Task<IActionResult> Get(string id)
+        {
+            var student = await _studentService.GetAsync(id);
+
+            if (student is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(student);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post(Student newStudent)
+        {
+            await _studentService.CreateAsync(newStudent);
+
+            return CreatedAtAction(nameof(Get), new { id = newStudent.Id }, newStudent);
+        }
+
+        [HttpPut("{id:length(24)}")]
+        public async Task<IActionResult> Update(string id, Student updatedStudent)
+        {
+            var student = await _studentService.GetAsync(id);
+
+            if (student is null)
+            {
+                return NotFound();
+            }
+
+            updatedStudent.Id = student.Id;
+
+            await _studentService.UpdateAsync(id, updatedStudent);
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id:length(24)}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var student = await _studentService.GetAsync(id);
+
+            if (student is null)
+            {
+                return NotFound();
+            }
+
+            await _studentService.RemoveAsync(id);
+
+            return NoContent();
         }
     }
 }

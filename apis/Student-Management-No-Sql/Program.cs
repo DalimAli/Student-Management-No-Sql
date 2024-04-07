@@ -1,4 +1,5 @@
 
+using Student_Management_No_Sql.Infratructure;
 using Student_Management_No_Sql.Repository;
 using Student_Management_No_Sql.Services;
 
@@ -10,14 +11,15 @@ namespace Student_Management_No_Sql
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            builder.Services.Configure<StudentDbSettings>( builder.Configuration.GetSection("StudentDatabase"));
 
             builder.Services.AddRepositoryDependency();
             builder.Services.AddServiceDependency();
 
 
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddControllers().AddJsonOptions(
+        options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
