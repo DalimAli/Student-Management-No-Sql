@@ -14,19 +14,19 @@ namespace Student_Management_No_Sql.Services.implementations
             _studentRepository = studentRepository;
         }
 
-        public async Task<List<Student>> GetAsync() =>
-                await _studentRepository.GetAsync();
+        public async Task<IList<Student>> GetsAsync() =>
+                await _studentRepository.GetsAsync();
 
-        public async Task<Student?> GetAsync(string id) =>
-            await _studentRepository.GetAsync(id);
+        public async Task<Student?> FindByIdAsync(string id) =>
+            await _studentRepository.FindByIdAsync(id); 
 
         public async Task CreateAsync(Student newStudent) =>
-            await _studentRepository.CreateAsync(newStudent);
+            await _studentRepository.InsertOneAsync(newStudent);
 
-        public async Task UpdateAsync(string id, Student updatedStudent) =>
-            await _studentRepository.UpdateAsync(id, updatedStudent);
+        public async Task UpdateAsync(Student updatedStudent) =>
+            await _studentRepository.ReplaceOneAsync( updatedStudent);
 
         public async Task RemoveAsync(string id) =>
-            await _studentRepository.RemoveAsync(id);
+            await _studentRepository.DeleteByIdAsync(id);
     }
 }

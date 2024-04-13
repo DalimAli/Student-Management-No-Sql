@@ -1,4 +1,5 @@
 
+using Microsoft.Extensions.Options;
 using Student_Management_No_Sql.Infratructure;
 using Student_Management_No_Sql.Repository;
 using Student_Management_No_Sql.Services;
@@ -11,7 +12,10 @@ namespace Student_Management_No_Sql
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.Configure<StudentDbSettings>( builder.Configuration.GetSection("StudentDatabase"));
+            builder.Services.Configure<StudentDbSettings>(builder.Configuration.GetSection("StudentDatabase"));
+
+            builder.Services.AddSingleton<IStudentDbSettings>(sp => 
+            sp.GetRequiredService<IOptions<StudentDbSettings>>().Value);
 
             builder.Services.AddRepositoryDependency();
             builder.Services.AddServiceDependency();

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Student_Management_No_Sql.Infratructure
 {
-    public class StudentDbSettings: IStudentDbSettings
+    public interface IStudentDbSettings
     {
         public string ConnectionString { get; set; }
 

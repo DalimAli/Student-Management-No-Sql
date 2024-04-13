@@ -20,14 +20,14 @@ namespace Student_Management_No_Sql.Controllers
         [Route("gets")]
         public async Task<IActionResult> GetsAsync() 
         {
-            var students = await _studentService.GetAsync();
+            var students = await _studentService.GetsAsync();
             return Ok(students);
         }
 
         [HttpGet("{id:length(24)}")]
         public async Task<IActionResult> Get(string id)
         {
-            var student = await _studentService.GetAsync(id);
+            var student = await _studentService.FindByIdAsync(id);
 
             if (student is null)
             {
@@ -45,19 +45,10 @@ namespace Student_Management_No_Sql.Controllers
             return CreatedAtAction(nameof(Get), new { id = newStudent.Id }, newStudent);
         }
 
-        [HttpPut("{id:length(24)}")]
-        public async Task<IActionResult> Update(string id, Student updatedStudent)
+        [HttpPut]
+        public async Task<IActionResult> Update(Student updatedStudent)
         {
-            var student = await _studentService.GetAsync(id);
-
-            if (student is null)
-            {
-                return NotFound();
-            }
-
-            updatedStudent.Id = student.Id;
-
-            await _studentService.UpdateAsync(id, updatedStudent);
+            await _studentService.UpdateAsync(updatedStudent);
 
             return NoContent();
         }
@@ -65,15 +56,7 @@ namespace Student_Management_No_Sql.Controllers
         [HttpDelete("{id:length(24)}")]
         public async Task<IActionResult> Delete(string id)
         {
-            var student = await _studentService.GetAsync(id);
-
-            if (student is null)
-            {
-                return NotFound();
-            }
-
             await _studentService.RemoveAsync(id);
-
             return NoContent();
         }
     }

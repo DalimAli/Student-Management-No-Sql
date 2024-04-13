@@ -1,14 +1,14 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Student_Management_No_Sql.Entities.Base;
 using System.ComponentModel.DataAnnotations;
 
 namespace Student_Management_No_Sql.Entities.Entities
 {
-    public class Student
+    [BsonCollection("Students")]
+    public class Student: BaseDocument
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        
         [Required]
         public string Name { get; set; }
         public string Email { get; set; }

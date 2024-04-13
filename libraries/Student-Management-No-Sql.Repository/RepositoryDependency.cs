@@ -9,7 +9,7 @@ namespace Student_Management_No_Sql.Repository
     {
         public static void AddRepositoryDependency(this IServiceCollection serviceCollection)
         {
-            //serviceCollection.AddScoped<IBaseRepository, BaseRepository>();
+            serviceCollection.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             serviceCollection.AddScoped<IStudentRepository, StudentRepository>();
         }
     }
