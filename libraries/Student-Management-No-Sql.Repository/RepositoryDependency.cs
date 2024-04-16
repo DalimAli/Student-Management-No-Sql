@@ -11,6 +11,8 @@ namespace Student_Management_No_Sql.Repository
         {
             serviceCollection.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             serviceCollection.AddScoped<IStudentRepository, StudentRepository>();
+            serviceCollection.AddScoped<ICourseRepository, CourseRepository>();
+            
         }
     }
 }

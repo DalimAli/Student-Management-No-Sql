@@ -9,6 +9,7 @@ namespace Student_Management_No_Sql.Services
         public static void AddServiceDependency(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped<IStudentService, StudentService>();
+            serviceCollection.AddScoped<ICourseService, CourseService>();
         }
     }
 }
