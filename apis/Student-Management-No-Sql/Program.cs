@@ -1,5 +1,6 @@
 
 using Microsoft.Extensions.Options;
+using Student_Management_No_Sql.Cache;
 using Student_Management_No_Sql.Infratructure;
 using Student_Management_No_Sql.Repository;
 using Student_Management_No_Sql.Services;
@@ -19,10 +20,18 @@ namespace Student_Management_No_Sql
 
             builder.Services.AddRepositoryDependency();
             builder.Services.AddServiceDependency();
-
+            builder.Services.AddScoped<ICacheService, CacheService>();
 
             builder.Services.AddControllers().AddJsonOptions(
-        options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+            options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+
+            var redisConfig = builder.Configuration.GetSection("AppSettings:Redis");
+            var redisConnectionString = redisConfig["Connection"];
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisConnectionString;
+                options.InstanceName = "StudentManagementNoSql";
+            });
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

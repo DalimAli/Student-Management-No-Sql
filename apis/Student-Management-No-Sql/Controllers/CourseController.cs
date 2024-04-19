@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Student_Management_No_Sql.Cache;
 using Student_Management_No_Sql.Entities.Entities;
 using Student_Management_No_Sql.Services.Interfaces;
 
@@ -9,17 +10,26 @@ namespace Student_Management_No_Sql.Controllers
     public class CourseController : ControllerBase
     {
         private readonly ICourseService _courseService;
+        private readonly ICacheService _cacheService;
 
-        public CourseController(ICourseService courseService)
+        public CourseController(ICourseService courseService, ICacheService cacheService)
         {
             _courseService = courseService;
+            _cacheService = cacheService;
         }
 
         [HttpGet]
         [Route("gets")]
-        public async Task<IActionResult> GetsAsync() 
+        public async Task<IActionResult> GetsAsync()
         {
+            var cachedData = await _cacheService.GetCachedDataAsync<List<Course>>(nameof(Course).ToLower());
+
+            if (cachedData != null)
+                return Ok(cachedData);
+
             var courses = await _courseService.GetsAsync();
+
+            await _cacheService.SetCachedDataAsync(nameof(Course).ToLower(), courses, new TimeSpan(0, 1, 0));
             return Ok(courses);
         }
 
@@ -40,7 +50,7 @@ namespace Student_Management_No_Sql.Controllers
         public async Task<IActionResult> Post(Course newCourse)
         {
             await _courseService.CreateAsync(newCourse);
-
+            await _cacheService.RemoveAsync(nameof(Course).ToLower());
             return CreatedAtAction(nameof(Get), new { id = newCourse.Id }, newCourse);
         }
 

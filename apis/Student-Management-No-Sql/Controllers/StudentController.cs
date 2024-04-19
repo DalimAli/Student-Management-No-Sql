@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Student_Management_No_Sql.Cache;
 using Student_Management_No_Sql.Entities.Entities;
 using Student_Management_No_Sql.Services.Interfaces;
 
@@ -10,17 +11,26 @@ namespace Student_Management_No_Sql.Controllers
     public class StudentController : ControllerBase
     {
         private readonly IStudentService _studentService;
-
-        public StudentController(IStudentService studentService)
+        private readonly ICacheService _cacheService;
+        public StudentController(IStudentService studentService, ICacheService cacheService)
         {
             _studentService = studentService;
+            _cacheService = cacheService;
         }
 
         [HttpGet]
         [Route("gets")]
         public async Task<IActionResult> GetsAsync() 
         {
+            var cachedData = await _cacheService.GetCachedDataAsync<List<Student>>(nameof(Student).ToLower());
+
+            if (cachedData != null)
+                return Ok(cachedData);
+
             var students = await _studentService.GetsAsync();
+
+            await _cacheService.SetCachedDataAsync(nameof(Student).ToLower(), students, new TimeSpan(0, 1, 0));
+            
             return Ok(students);
         }
 
@@ -41,7 +51,7 @@ namespace Student_Management_No_Sql.Controllers
         public async Task<IActionResult> Post(Student newStudent)
         {
             await _studentService.CreateAsync(newStudent);
-
+            await _cacheService.RemoveAsync(nameof(Student).ToLower());
             return CreatedAtAction(nameof(Get), new { id = newStudent.Id }, newStudent);
         }
 
